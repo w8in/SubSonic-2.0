@@ -832,21 +832,10 @@ namespace SubSonic
         /// <param name="dataReader">The data reader.</param>
         public virtual void Load(IDataReader dataReader)
         {
-            foreach(TableSchema.TableColumn col in BaseSchema.Columns)
+            for (int i = 0; i < dataReader.FieldCount; i++)
             {
-                try
-                {
-                    SetColumnValue(col.ColumnName, dataReader[col.ColumnName]);
-                }
-                catch(Exception)
-                {
-                    // turning off the Exception for now
-                    // to support partial loads
-
-                    // throw new Exception("Unable to set column value for " + col.ColumnName + ": " + x.Message);
-                }
+                SetColumnValue(dataReader.GetName(i), dataReader[i]);
             }
-
             SetLoadState();
             MarkClean();
         }
