@@ -232,6 +232,33 @@ namespace SubSonic
         }
 
         /// <summary>
+        /// Ors the expression.
+        /// </summary>
+        /// <param name="column">The column.</param>
+        /// <returns></returns>
+        public Constraint OrExpression(TableSchema.TableColumn column)
+        {
+            //as a convenience, check that the last constraint
+            //is a close paren
+            if (Constraints.Count > 0 && (ClosedParenCount < OpenParenCount))
+            {
+                Constraint last = Constraints[Constraints.Count - 1];
+                if (last.Comparison != Comparison.CloseParentheses)
+                    CloseExpression();
+            }
+
+            OpenParenCount++;
+
+            Constraint c = new Constraint(ConstraintType.Or, column.ColumnName, column.QualifiedName, "(" + column.ColumnName, this)
+            {
+                TableName = column.Table.Name,
+                DbType = column.DataType,
+                Column = column
+            };
+            return c;
+        }
+
+        /// <summary>
         /// Ors the specified column name.
         /// </summary>
         /// <param name="columnName">Name of the column.</param>
@@ -293,6 +320,32 @@ namespace SubSonic
             }
             OpenParenCount++;
             return new Constraint(ConstraintType.And, columnName, columnName, "(" + columnName, this);
+        }
+
+        /// <summary>
+        /// Ands the expression.
+        /// </summary>
+        /// <param name="column">The column.</param>
+        /// <returns></returns>
+        public Constraint AndExpression(TableSchema.TableColumn column)
+        {
+            //as a convenience, check that the last constraint
+            //is a close paren
+            if (Constraints.Count > 0 && (ClosedParenCount < OpenParenCount))
+            {
+                Constraint last = Constraints[Constraints.Count - 1];
+                if (last.Comparison != Comparison.CloseParentheses)
+                    CloseExpression();
+            }
+            OpenParenCount++;
+
+            Constraint c = new Constraint(ConstraintType.And, column.ColumnName, column.QualifiedName, "(" + column.ColumnName, this)
+                                {
+                                    TableName = column.Table.Name,
+                                    DbType = column.DataType,
+                                    Column = column
+                                };
+            return c;
         }
 
         /// <summary>
